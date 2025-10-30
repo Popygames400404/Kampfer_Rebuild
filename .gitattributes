@@ -1,0 +1,2 @@
+Assets/**/*.tga filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.zip filter=lfs diff=lfs merge=lfs -text
