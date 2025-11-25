@@ -13,13 +13,13 @@ public class InputSystem_Manager : MonoBehaviour
     void Awake()
     {
         _P_Manager = FindObjectOfType<Player_Manager>();
-        if (_P_Manager != null) ;
+        if (_P_Manager != null) 
         {
             Debug.Log("Œ©‚Â‚¯‚½");
             _P_Manager.enabled = false;
         }
         _C_Manager = FindObjectOfType<Camera_Manager>();
-        if (_C_Manager != null) ;
+        if (_C_Manager != null) 
         {
             Debug.Log("Œ©‚Â‚¯‚½");
             _C_Manager.enabled = false;
