@@ -6,7 +6,7 @@ public class HitBoxPart : MonoBehaviour
 {
     public enum HitBodyPart{Head,Middle,Leg,Shield}
 
-    [Header("•”ˆÊ‚ÌŽí—Þ‚ð‘I‘ð")]
+    [Header("ï¿½ï¿½ï¿½Ê‚ÌŽï¿½Þ‚ï¿½Iï¿½ï¿½")]
     public HitBodyPart _Bodypart;
 
     [Range(0f, 5f)]
@@ -16,7 +16,7 @@ public class HitBoxPart : MonoBehaviour
 
     void Awake()
     {
-        // ‚Ç‚ÌRoot‚ðŒ©‚Ä‚¢‚é‚©Šm”F
+        // ï¿½Ç‚ï¿½Rootï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½mï¿½F
         var root = transform.root;
         //Debug.Log($"[{gameObject.name}] root = {root.name}");
 
@@ -33,20 +33,20 @@ public class HitBoxPart : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"[HitBox] triggered by {other.name} layer:{LayerMask.LayerToName(other.gameObject.layer)}");
+        //Debug.Log($"[HitBox] triggered by {other.name} layer:{LayerMask.LayerToName(other.gameObject.layer)}");
 
-        Debug.Log($"[HitBox] {gameObject.name} triggered by: {other.name}");
+        //Debug.Log($"[HitBox] {gameObject.name} triggered by: {other.name}");
 
-        //“GWepon‚©‚ðŠm”F
+        //ï¿½GWeponï¿½ï¿½ï¿½ï¿½ï¿½mï¿½F
         E_WeponAttackHitBox Wepon = other.GetComponent<E_WeponAttackHitBox>();
         if (Wepon == null)
         {
-            Debug.Log($"[HitBox] no weapon component on: {other.name}");
+            //Debug.Log($"[HitBox] no weapon component on: {other.name}");
             return;
         }
         int finaldamage = Mathf.RoundToInt(Wepon.damage * _DamageMultiplier);
 
-        Debug.Log($"[HitBox] Damage: {finaldamage} ({_Bodypart}) From {other.name}");
+        //Debug.Log($"[HitBox] Damage: {finaldamage} ({_Bodypart}) From {other.name}");
 
         _Life.TakeDamage(finaldamage);
     }

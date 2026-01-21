@@ -10,13 +10,13 @@ public class WeponAttackHitBox : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"[Weapon] Hit: {other.name} (layer:{LayerMask.LayerToName(other.gameObject.layer)})");
-        Debug.Log($"[Weapon] Hit: {other.name}");
+        //Debug.Log($"[Weapon] Hit: {other.name} (layer:{LayerMask.LayerToName(other.gameObject.layer)})");
+        //Debug.Log($"[Weapon] Hit: {other.name}");
 
         E_HitBoxPart hitbox = other.GetComponent<E_HitBoxPart>();
         if (hitbox != null)
         {
-            Debug.Log($"[Weapon] HitBox detected on part: {hitbox._Bodypart}");
+            //Debug.Log($"[Weapon] HitBox detected on part: {hitbox._Bodypart}");
         }
     }
 }

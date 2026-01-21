@@ -3306,7 +3306,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxCombo: 3
-  comboResetTime: 1.2
+  comboResetTime: 0.5
+  _Anim: {fileID: 0}
+  idleStateName: Idle1
+  returnBlendTime: 0.05
 --- !u!1 &1236127273
 GameObject:
   m_ObjectHideFlags: 0

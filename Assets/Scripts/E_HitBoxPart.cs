@@ -6,7 +6,7 @@ public class E_HitBoxPart : MonoBehaviour
 {
     public enum HitBodyPart { Head, Middle, Leg, }
 
-    [Header("•”ˆÊ‚ÌŽí—Þ‚ð‘I‘ð")]
+    [Header("ï¿½ï¿½ï¿½Ê‚ÌŽï¿½Þ‚ï¿½Iï¿½ï¿½")]
     public HitBodyPart _Bodypart;
 
     [Range(0f, 5f)]
@@ -22,15 +22,15 @@ public class E_HitBoxPart : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //PlayerWepon‚©Šm”F
+        //PlayerWeponï¿½ï¿½ï¿½mï¿½F
         WeponAttackHitBox Wepon = other.GetComponent<WeponAttackHitBox>();
         if (Wepon == null)
         {
-            Debug.Log($"[HitBox] no weapon component on: {other.name}");
+            //Debug.Log($"[HitBox] no weapon component on: {other.name}");
             return;
         }
         int finaldamage = Mathf.RoundToInt(Wepon.damage * _DamageMultiplier);
-        Debug.Log($"[E_HitBox] Damage: {finaldamage} ({_Bodypart}) From {other.name}");
+        //Debug.Log($"[E_HitBox] Damage: {finaldamage} ({_Bodypart}) From {other.name}");
 
         _Life.TakeDamage(finaldamage);
     }
