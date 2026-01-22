@@ -2,37 +2,38 @@ using System.Collections;
 using UnityEngine;
 
 /*
-P_AttackManager 改訂版
-========================
-全体的な流れ：
-1. Update() で攻撃入力を監視
-2. 攻撃開始 TryAttack() → DoAttack() Coroutine
+全体的な流れ：⭐マウスでクリックして攻撃、連打でコンボが進行。
+1. Update() 
+    - 攻撃入力を監視
+2. TryAttack() 
+    - DoAttack() Coroutine
 3. DoAttack():
-   - ComboStep に応じて Slash1～Slash3 を再生
-   - 再生終了（normalizedTime >=1f）で ForceReturnToBase() 呼び出し
-   - 次コンボ入力受付も Slash Transition に依存せず、強制的に進める
+    - ComboStep に応じて Slash1～Slash3 を再生
+    - 再生終了（normalizedTime >=1f）で ForceReturnToBase() 呼び出し
+    - 次コンボ入力受付も Slash Transition に依存せず、強制的に進める
 4. ForceReturnToBase():
-   - isAttacking=false にして、Idle に強制クロスフェード
-   - Run は Speed に応じて BaseLayer で自動切替
+    - isAttacking=false にして、Idle に強制クロスフェード
+    - Run は Speed に応じて BaseLayer で自動切替
 */
 
 public class P_AttackManager : MonoBehaviour
 {
     [Header("コンボ設定")]
-    public int maxCombo = 3;
-    public float comboResetTime = 0.5f;
+    public int maxCombo = 3;            // 最大コンボ段数
+    public float comboResetTime = 0.5f; // 次の攻撃入力を受け付ける猶予時間
+    private int currentCombo = 0;       // 現在のコンボ段階（0=非攻撃、1〜maxCombo）
+    private bool isAttacking = false;   // 攻撃中かどうかを示すフラグ
+    private float comboTimer = 0f;      // コンボ入力受付時間を計測するタイマー
 
-    private int currentCombo = 0;
-    private bool isAttacking = false;
-    private float comboTimer = 0f;
+    [Header("事後処理")]
+    [SerializeField] private Animator _Anim;               // キャラクターのAnimator制御用
+    [SerializeField] private string idleStateName = "Idle1"; // 攻撃終了後に戻すIdleステート名
+    [SerializeField] private float returnBlendTime = 0.05f; // 攻撃→Idle遷移時のブレンド時間
 
-    [SerializeField] private Animator _Anim;
-    [SerializeField] private string idleStateName = "Idle1";
-    [SerializeField] private float returnBlendTime = 0.05f;
 
     void Awake()
     {
-        _Anim = GetComponent<Animator>();
+        _Anim = GetComponent<Animator>();   //Animator取得
     }
 
     void Update()
@@ -40,15 +41,16 @@ public class P_AttackManager : MonoBehaviour
         HandleAttackingInput();
 
         // 攻撃中は Slash 再生終了を監視
-        if (isAttacking)
+        if (isAttacking)    
         {
             AnimatorStateInfo state = _Anim.GetCurrentAnimatorStateInfo(0);
 
-            // Attack タグのアニメーションが終了したら Base Layer に戻す
+            /* // Attack タグのアニメーションが終了したら Base Layer に戻す　SubStateを使わない為。削除
             if (state.IsTag("Attack") && state.normalizedTime >= 1f)
             {
                 ForceReturnToBase();
-            }
+            } 
+            */
         }
     }
 
@@ -64,7 +66,7 @@ public class P_AttackManager : MonoBehaviour
     {
         if (!isAttacking)
         {
-            currentCombo++;
+            currentCombo=1;
             if (currentCombo > maxCombo) currentCombo = 1;
             StartCoroutine(DoAttack());
         }
@@ -119,20 +121,9 @@ public class P_AttackManager : MonoBehaviour
             }
         }
 
-        // 攻撃終了後、Base Layer に戻す
-        ForceReturnToBase();
-    }
-
-    private void ForceReturnToBase()
-    {
         currentCombo = 0;
         isAttacking = false;
         _Anim.SetBool("isAttacking", false);
         _Anim.SetInteger("ComboStep", 0);
-
-        // 強制的に Idle にクロスフェード
-        _Anim.CrossFade(idleStateName, returnBlendTime, 0);
-
-        Debug.Log("⚡ Force Return To BaseLayer");
     }
 }
