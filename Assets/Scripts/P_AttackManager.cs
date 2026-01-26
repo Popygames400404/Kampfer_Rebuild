@@ -27,13 +27,17 @@ public class P_AttackManager : MonoBehaviour
 
     [Header("事後処理")]
     [SerializeField] private Animator _Anim;               // キャラクターのAnimator制御用
-    [SerializeField] private string idleStateName = "Idle1"; // 攻撃終了後に戻すIdleステート名
-    [SerializeField] private float returnBlendTime = 0.05f; // 攻撃→Idle遷移時のブレンド時間
-
+    [SerializeField] private Player_Manager _Player;
+    [SerializeField] private TrailRenderer _SwordTrail; //Effect制御用
 
     void Awake()
     {
         _Anim = GetComponent<Animator>();   //Animator取得
+        _Player=GetComponent<Player_Manager>();
+
+        if(_SwordTrail!=null)
+            _SwordTrail.enabled=false;
+
     }
 
     void Update()
@@ -76,6 +80,9 @@ public class P_AttackManager : MonoBehaviour
     {
         isAttacking = true;
         _Anim.SetBool("isAttacking", true);
+
+        if(_SwordTrail!=null)
+            _SwordTrail.enabled=true; //攻撃時エフェクトON
 
         _Anim.SetInteger("ComboStep", currentCombo);
 
@@ -125,5 +132,8 @@ public class P_AttackManager : MonoBehaviour
         isAttacking = false;
         _Anim.SetBool("isAttacking", false);
         _Anim.SetInteger("ComboStep", 0);
+
+        if(_SwordTrail!=null)
+            _SwordTrail.enabled=false;
     }
 }

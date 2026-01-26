@@ -2395,6 +2395,7 @@ MonoBehaviour:
   _DetectionRange: 15
   _Gravity: -9.8
   _RotationSpeeds: 5
+  swordTrail: {fileID: 1490037834}
 --- !u!114 &811844906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3308,8 +3309,8 @@ MonoBehaviour:
   maxCombo: 3
   comboResetTime: 0.5
   _Anim: {fileID: 0}
-  idleStateName: Idle1
-  returnBlendTime: 0.05
+  _Player: {fileID: 1160482680}
+  _SwordTrail: {fileID: 91096355}
 --- !u!1 &1236127273
 GameObject:
   m_ObjectHideFlags: 0
@@ -5730,6 +5731,7 @@ MonoBehaviour:
   _DetectionRange: 15
   _Gravity: -9.8
   _RotationSpeeds: 5
+  swordTrail: {fileID: 0}
 --- !u!114 &2020479246
 MonoBehaviour:
   m_ObjectHideFlags: 0

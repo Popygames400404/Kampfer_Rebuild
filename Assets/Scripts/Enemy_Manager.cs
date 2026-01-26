@@ -2,186 +2,156 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_Manager : MonoBehaviour,IDamageable
-{
-    public Transform _Player;//UŒ‚‘ÎÛ
-    public float _MoveSpeed = 6f;//ˆÚ“®‘¬“x
-    public float _AttackRange = 2f;//UŒ‚‚Å‚«‚é‹——£
-    public float _DetectionRange = 15f;//ƒvƒŒƒCƒ„[‚ğŒ©‚Â‚¯‚é”ÍˆÍ
-    //public float _RetreatDistance=1.5f;//
-    public float _Gravity = -9.8f;//d—Í
-    public float _RotationSpeeds = 5f;//Œü‚«‚ğ•Ï‚¦‚é‘¬‚³
+public class Enemy_Manager : MonoBehaviour, IDamageable
+{   
+    public Transform _Player;                 // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å‚ç…§
+    public float _MoveSpeed = 6f;             // ç§»å‹•é€Ÿåº¦
+    public float _AttackRange = 2f;           // æ”»æ’ƒå¯èƒ½è·é›¢
+    public float _DetectionRange = 15f;       // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ¤œçŸ¥è·é›¢
+    public float _Gravity = -9.8f;            // é‡åŠ›
+    public float _RotationSpeeds = 5f;        // å›è»¢é€Ÿåº¦
 
-    private CharacterController _Controller;//•¨—ˆÚ“®—p
-    private Animator _Anim;
-    private bool isAttacking = false;//UŒ‚’†‚©‚Ç‚¤‚©
-    private Vector3 _Velocity;//d—Í‚Ìˆ×‚ÌY•ûŒüƒxƒNƒgƒ‹
+    private CharacterController _Controller;  // ç§»å‹•åˆ¶å¾¡ç”¨
+    private Animator _Anim;                   // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼
+    private bool isAttacking = false;         // æ”»æ’ƒä¸­ãƒ•ãƒ©ã‚°
+    private Vector3 _Velocity;                // é‡åŠ›ç”¨é€Ÿåº¦ãƒ™ã‚¯ãƒˆãƒ«
 
-    void Awake()
-    {
-        //_Controller = GetComponent<CharacterController>();
-        //_Anim = GetComponent<Animator>();
-    }
+    [Header("æ”»æ’ƒã‚¨ãƒ•ã‚§ã‚¯ãƒˆ")]
+    public TrailRenderer swordTrail; // å‰£ã®Trail 
 
-    // Start is called before the first frame update
     void Start()
     {
-        //Debug.Log("[Enemy] Start()");
         _Controller = GetComponent<CharacterController>();
         _Anim = GetComponent<Animator>();
 
-        //Debug.Log($"[Enemy] Controller {(_Controller == null ? "NULL" : "OK")}, Animator {(_Anim == null ? "NULL" : "OK")}");
+        if (swordTrail != null)
+        swordTrail.enabled = false; // æœ€åˆã¯OFF
 
+        // Playerã‚¿ã‚°ã‹ã‚‰ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å–å¾—
         if (!_Player)
         {
             GameObject p = GameObject.FindWithTag("Player");
             if (p != null)
-            {
                 _Player = p.transform;
-            }
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // ƒfƒoƒbƒO—p‚Ì‘ŠúƒƒOi•K‚¸o‚é‚Í‚¸j
-        //Debug.Log("[Enemy] Update() enter");
-
-        if (_Controller == null)
-        {
-            //Debug.LogError("[Enemy] CharacterController ‚ª null ‚Å‚·BƒIƒuƒWƒFƒNƒg‚É•t‚¯‚Ä‚­‚¾‚³‚¢B");
+        if (_Controller == null || _Player == null)
             return;
-        }
 
-        if (!_Player)//ƒ^[ƒQƒbƒg‚ª‚¢‚È‚¯‚ê‚ÎŒJ‚è•Ô‚·iƒGƒ‰[‘Îôj
-        {
-            //Debug.LogWarning("[Enemy] _Player ‚ª nullBStart()‚Åæ“¾‚Å‚«‚Ä‚¢‚È‚¢‰Â”\«‚ª‚ ‚è‚Ü‚·B");
-            return;
-        }
-
-        //Vector3 enemyPos = new Vector3(transform.position.x, 0, transform.position.z);
-        //Vector3 playerPos = new Vector3(_Player.position.x, 0, _Player.position.z);
-        //float distance = Vector3.Distance(enemyPos, playerPos);
-
+        // æ•µã¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è·é›¢ï¼ˆæ°´å¹³è·é›¢ã®ã¿ï¼‰
         Vector3 enemyPos = transform.position;
         Vector3 playerPos = _Player.position;
-        //distance‹——£‚ğ‘ª‚Á‚ÄA‚Ç‚¤s“®‚·‚é‚©‚ğŒˆ‚ß‚éB
-        //float distance = Vector3.Distance(new Vector3(enemyPos.x, 0, enemyPos.z), new Vector3(playerPos.x, 0, playerPos.z));
-        Vector3 horizontalDistance = new Vector3(enemyPos.x, 0, enemyPos.z) - new Vector3(playerPos.x, 0, playerPos.z);
+        Vector3 horizontalDistance = new Vector3(enemyPos.x, 0, enemyPos.z) 
+                                   - new Vector3(playerPos.x, 0, playerPos.z);
         float distance = horizontalDistance.magnitude;
 
-        //d—Íˆ—
+        // é‡åŠ›å‡¦ç†
         if (!_Controller.isGrounded)
-        {
-            _Velocity.y += -1f;
-        }
-        else
         {
             _Velocity.y += _Gravity * Time.deltaTime;
         }
-        //_Controller.Move(_Velocity * Time.deltaTime);
+        else
+        {
+            _Velocity.y = -2f; // æ¥åœ°æ™‚ã®å¸ç€
+        }
 
-        //s“®‘I‘ğ
+        // è¡Œå‹•åˆ†å²
         if (distance < _AttackRange)
         {
-            //UŒ‚‰Â”\‹——£
-            AttackBehavior();
-            //Debug.Log("[Attack");
+            AttackBehavior(); // æ”»æ’ƒ
         }
         else if (distance < _DetectionRange)
         {
-            //Debug.Log("MoveTowardPlayer (should move)");
-            MoveTowardPlayer();
-            //Debug.Log("Move");
+            MoveTowardPlayer(); // è¿½è·¡
         }
         else
         {
-            //Debug.Log("Idle");
-            IdleBehavior();
-            //Debug.Log("None");
+            IdleBehavior(); // å¾…æ©Ÿ
         }
+
         _Controller.Move(_Velocity * Time.deltaTime);
     }
 
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¸ç§»å‹•
     void MoveTowardPlayer()
     {
-        //Debug.Log("[Enemy] MoveTowardPlayer() called");
-        if (isAttacking)
-        {
-            //Debug.Log("[Enemy] Move canceled: isAttacking == true");
-            return;
-        }
+        if (isAttacking) return; // æ”»æ’ƒä¸­ã¯ç§»å‹•ã—ãªã„
+
         if (_Anim != null) _Anim.SetBool("isMoving", true);
 
         Vector3 dir = (_Player.position - transform.position);
-        dir.y = 0f;//ã‰º‚ÌŒX‚«‚Í–³‹
+        dir.y = 0f;
         dir = dir.normalized;
 
-        ////Debug.Log($"[Enemy] dir = {dir}");
-
-        //
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ–¹å‘ã«å›è»¢
         Quaternion lookRot = Quaternion.LookRotation(dir);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, _RotationSpeeds * Time.deltaTime);
 
-        //…•½ˆÚ“®‚Æd—Í‚ğ1‰ñ‚ÌMove‚É‚Ü‚Æ‚ß‚é
-        Vector3 move = dir * _MoveSpeed;
-        move.y = _Velocity.y;
-
-        //Debug.Log($"[Enemy] Move delta (before Move) = {move * Time.deltaTime}");
-
+        // ç§»å‹•
         _Controller.Move(dir * _MoveSpeed * Time.deltaTime);
-        //Debug.Log("[Enemy] _Controller.Move() called");
     }
 
+    // æ”»æ’ƒé–‹å§‹åˆ¤å®š
     void AttackBehavior()
     {
-        //Debug.Log("[Enemy] AttackBehavior()");
         if (_Anim != null) _Anim.SetBool("isMoving", false);
+
         if (!isAttacking)
         {
             StartCoroutine(PerformAttack());
         }
     }
 
+    // å®Ÿéš›ã®æ”»æ’ƒå‡¦ç†
     IEnumerator PerformAttack()
     {
-        //Debug.Log("[Enemy] PerformAttack start");
         isAttacking = true;
-        if (_Anim != null) _Anim.SetTrigger("Slash");
-        yield return new WaitForSeconds(2.0f);
+
+        if (_Anim != null)
+            _Anim.SetTrigger("Slash"); // æ”»æ’ƒã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
+            // â˜… æ”»æ’ƒé–‹å§‹ â†’ ã‚¨ãƒ•ã‚§ã‚¯ãƒˆON
+            if (swordTrail != null)
+            swordTrail.enabled = true;
+
+        yield return new WaitForSeconds(0.5f); // æ”»æ’ƒæ™‚é–“
+
+        // â˜… æ”»æ’ƒçµ‚äº† â†’ ã‚¨ãƒ•ã‚§ã‚¯ãƒˆOFF
+        if (swordTrail != null)
+        swordTrail.enabled = false;
+
+        yield return new WaitForSeconds(2.0f); // æ”»æ’ƒã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ 
+
         isAttacking = false;
-        //Debug.Log("[Enemy] PerformAttack end");
-
-        ////UŒ‚”»’è
-        //Ray ray = new Ray(transform.position + Vector3.up * 1f, transform.forward);
-        //// ‰Â‹‰»iSceneƒrƒ…[‚ÉÔü‚ğ•`‰æj
-        //Debug.DrawRay(ray.origin, ray.direction * 2.0f, Color.red, 1.0f);
-
-        //if (Physics.Raycast(ray, out RaycastHit hit, 2.0f))
-        //{
-        //    Life_Manager enemyLife = hit.collider.GetComponent<Life_Manager>();
-        //    if (enemyLife)
-        //    {
-        //        enemyLife.TakeDamage(50);
-        //    }
-        //}
     }
 
+    // å¾…æ©Ÿ
     void IdleBehavior()
     {
         if (_Anim != null) _Anim.SetBool("isMoving", false);
     }
 
+    // æ­»äº¡å‡¦ç†
     public void Die()
     {
         this.enabled = false;
         _Anim.SetBool("Dead", true);
 
-
-        //€–SƒAƒjƒ[ƒVƒ‡ƒ“‚ªI‚í‚Á‚½‚çíœ
-        // •b”‚Í€–SƒAƒjƒ[ƒVƒ‡ƒ“‚Ì’·‚³‚É‡‚í‚¹‚é
-        Destroy(gameObject, 3.5f);
+        Destroy(gameObject, 3.5f); // æ­»äº¡ã‚¢ãƒ‹ãƒ¡å¾Œã«å‰Šé™¤
     }
-}
 
+    public void TrailOn()
+    {
+        if (swordTrail != null)
+            swordTrail.enabled = true;
+    }
+
+    public void TrailOff()
+    {
+        if (swordTrail != null)
+            swordTrail.enabled = false;
+    }
+
+}

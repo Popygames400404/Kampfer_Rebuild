@@ -83,10 +83,15 @@ public class Player_Manager : MonoBehaviour,IDamageable
             }
         }
 
+
         //WASD入力を取得　※floatを付けると上で宣言した_Horizontalとは別物となってしまう為、
         //下のFixed Updateでの_Horizontalには整数が入らず0のままとなってしまう。
         float _Horizontal = Input.GetAxis("Horizontal");
         float _Vertical = Input.GetAxis("Vertical");
+
+        _Anim.SetFloat("MoveX", _Horizontal);
+        _Anim.SetFloat("MoveY", _Vertical);
+        _Anim.SetBool("isLockOn", _LockOnTarget != null);
 
         //---カメラの向きを基準に移動方向を作る---
         Vector3 camForward = _Cam.forward;
@@ -99,6 +104,12 @@ public class Player_Manager : MonoBehaviour,IDamageable
         // カメラ基準での移動方向を決定
         Vector3 move = (camRight * _Horizontal + camForward * _Vertical);
 
+        bool isMoving = move.sqrMagnitude > 0.01f;
+        _Anim.SetBool("IsLockOnMove", _LockOnTarget != null && isMoving);
+        _Anim.SetFloat("MoveX", _Horizontal);
+        _Anim.SetFloat("MoveY", _Vertical);
+
+        //実際の移動
         Vector3 totalMove = move * _Speed + _Velocity;
         _Controller.Move(totalMove * Time.deltaTime);
 
@@ -128,8 +139,10 @@ public class Player_Manager : MonoBehaviour,IDamageable
         }
 
        //---アニメーション速度設定
-        float speedPercent = move.magnitude; // 0～1の範囲に正規化してもOK
+        float speedPercent = move.magnitude;
+        if(speedPercent < 0.01f) speedPercent = 0f;
         _Anim.SetFloat("Speed", speedPercent, 0.01f, Time.deltaTime);
+
     }
 
     void FindLockOnTarget()
